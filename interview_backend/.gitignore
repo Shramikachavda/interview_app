@@ -1,0 +1,112 @@
+# ---- Python ----
+__pycache__/
+*.py[cod]
+*$py.class
+
+# C extensions
+*.so
+
+# Virtual environments
+.env
+.venv
+env/
+venv/
+ENV/
+env.bak/
+venv.bak/
+
+# Pip / Poetry / Pipenv
+pip-log.txt
+pip-delete-this-directory.txt
+poetry.lock
+Pipfile.lock
+
+# Byte-compiled / optimized / DLL files
+*.pyo
+*.pyd
+*.dll
+*.dylib
+*.a
+*.out
+
+# Distribution / packaging
+build/
+dist/
+*.egg-info/
+.eggs/
+MANIFEST
+*.manifest
+*.spec
+
+# Unit test / coverage reports
+.coverage
+.coverage.*
+.cache
+nosetests.xml
+coverage.xml
+*.cover
+*.py,cover
+.hypothesis/
+.pytest_cache/
+htmlcov/
+
+# Logs
+*.log
+logs/
+*.pid
+
+# Jupyter notebooks checkpoints
+.ipynb_checkpoints
+
+# ---- Editors / IDEs ----
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# ---- OS files ----
+.DS_Store
+Thumbs.db
+
+# ---- Environment / Secrets ----
+*.env
+.env.local
+.env.*.local
+secrets.json
+config.json
+credentials.json
+apikeys.json
+
+# ---- LLM / AI specific ----
+# model weights and large files
+*.bin
+*.pt
+*.ckpt
+*.safetensors
+*.h5
+*.pkl
+*.joblib
+
+# HuggingFace cache
+.huggingface/
+transformers_cache/
+datasets/
+
+# LangChain / FastAPI caches
+langchain.db
+langchain_cache.sqlite
+__storage__/
+
+# ---- Docker ----
+*.pid
+*.seed
+*.bak
+.docker/
+docker-compose.override.yml
+
+# ---- MyPy / Pytype ----
+.mypy_cache/
+.pytype/
+
+# ---- Pyre type checker ----
+.pyre/

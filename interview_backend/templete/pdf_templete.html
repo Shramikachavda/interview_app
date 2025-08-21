@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Interview Detailed Feedback Report</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --primary-color: #6366F1;
+      --secondary-color: #8B5CF6;
+      --accent-color: #06B6D4;
+      --success-color: #10B981;
+      --warning-color: #F59E0B;
+      --error-color: #EF4444;
+      --background-color: #F8FAFC;
+      --surface-color: #FFFFFF;
+      --text-primary-color: #1E293B;
+      --text-secondary-color: #64748B;
+    }
+
+    @page { margin: 0; }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      margin: 0;
+      padding: 0;
+      color: var(--text-primary-color);
+      background: var(--background-color);
+      line-height: 1.6;
+      display: flex;
+      justify-content: center;
+      min-height: 100vh;
+    }
+
+    .container {
+      max-width: 100%;
+      width: 90%;
+      background: var(--surface-color);
+      border-radius: 12px;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+      padding: 2.5rem;
+      box-sizing: border-box;
+      margin: 2rem auto;
+    }
+
+    h1 {
+      color: var(--text-primary-color);
+      border-bottom: 4px solid var(--primary-color);
+      padding-bottom: 0.8rem;
+      margin-bottom: 1.5rem;
+      font-size: 2.5rem;
+      font-weight: 800;
+      text-align: center;
+    }
+
+    p.meta-info {
+      text-align: center;
+      font-weight: 500;
+      color: var(--text-secondary-color);
+      margin-bottom: 1.5rem;
+    }
+
+    p.overall-score {
+      font-size: 1.8rem;
+      font-weight: 700;
+      color: var(--surface-color);
+      background: var(--primary-color);
+      display: inline-block;
+      padding: 0.5rem 1.5rem;
+      border-radius: 8px;
+      margin-bottom: 2rem;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+      text-align: center;
+      width: 100%;
+    }
+
+    h2 {
+      color: var(--primary-color);
+      margin-top: 2rem;
+      margin-bottom: 1rem;
+      border-bottom: 1px solid var(--primary-color);
+      padding-bottom: 0.5rem;
+      font-size: 1.6rem;
+      font-weight: 600;
+    }
+
+    .section-card {
+      background: var(--background-color);
+      border-radius: 10px;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+      padding: 1.5rem;
+      margin-bottom: 2rem;
+      border: 1px solid rgba(0,0,0,0.05);
+    }
+
+    ul {
+      margin-left: 1.8rem;
+      color: var(--text-secondary-color);
+      list-style: disc;
+      padding-left: 0;
+    }
+
+    ul li { margin-bottom: 0.5rem; }
+
+    .question-feedback {
+      background: var(--surface-color);
+      border-radius: 8px;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+      margin-bottom: 1.5rem;
+      padding: 1.2rem;
+      border: 1px solid rgba(0,0,0,0.05);
+    }
+
+    .question-feedback h3 {
+      margin-top: 0;
+      font-weight: 700;
+      color: var(--text-primary-color);
+      font-size: 1.15rem;
+      margin-bottom: 0.8rem;
+    }
+
+    .question-feedback p {
+      margin: 0.3rem 0;
+      color: var(--text-primary-color);
+    }
+
+    .score-detail {
+      font-weight: 600;
+      color: var(--primary-color);
+      font-size: 1.05rem;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Interview Detailed Feedback Report</h1>
+
+    <!-- Date, Time, Interviewer Name -->
+    <p class="meta-info">
+      Date: {{ current_date }} | Time: {{ current_time }} | Interviewer: {{ interviewer_name }}
+    </p>
+
+    <p class="overall-score">Overall Score: {{ feedback.overall_score }}/10</p>
+
+    <div class="section-card">
+      <h2>Summary</h2>
+      <p>{{ feedback.summary }}</p>
+    </div>
+
+    <div class="section-card">
+      <h2>Strengths</h2>
+      <ul>
+        {% for item in feedback.strengths %}
+        <li>{{ item }}</li>
+        {% endfor %}
+      </ul>
+    </div>
+
+    <div class="section-card">
+      <h2>Areas for Improvement</h2>
+      <ul>
+        {% for item in feedback.improvements %}
+        <li>{{ item }}</li>
+        {% endfor %}
+      </ul>
+    </div>
+
+    <h2>Detailed Question Feedback</h2>
+    {% for qf in feedback.detailed_feedback %}
+    <div class="question-feedback">
+      <h3>Question:</h3>
+      <p>{{ qf.question }}</p>
+      <h3>Answer:</h3>
+      <p>{{ qf.answer }}</p>
+      <p class="score-detail">Evaluation: {{ qf.evaluation }}</p>
+      <p class="score-detail">Score: {{ qf.score }}/10</p>
+    </div>
+    {% endfor %}
+  </div>
+</body>
+</html>
