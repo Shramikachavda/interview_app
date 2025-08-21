@@ -2,6 +2,67 @@
 
 A production-ready HR interview system built with Python (FastAPI + LangGraph + SQLAlchemy) backend and Flutter frontend.
 
+## screens
+
+
+## 📱 Screens
+
+### 1. Landing Screen
+# Interview AI Powered App
+
+An AI-powered interview preparation app with Flutter (UI) and FastAPI (Backend).
+
+## 🚀 Features
+- AI-driven interview sessions (HR & Technical)
+- Feedback after completion
+- Dark mode support
+- Responsive UI
+
+---
+
+## 📱 Screenshots
+
+### 1. Landing Screen
+![Landing Screen](inteview_ui/assets/images/welcome.png)
+
+### 2. Login/Register Screen
+![Login Screen](inteview_ui/assets/images/login.png)  
+![Register Screen](inteview_ui/assets/images/register.png)
+
+### 3. Dashboard Screen
+![Dashboard](inteview_ui/assets/images/dashboard.png)  
+![Responsive Dashboard](inteview_ui/assets/images/dashboard_responsive.png)
+
+### 4. Interview Screen
+![Question Screen](inteview_ui/assets/images/question.png)
+
+### 5. Result Screen
+![Feedback](inteview_ui/assets/images/feedback.png)  
+![Feedback Detailed](inteview_ui/assets/images/feedback2.png)
+
+### 6. Settings Screen
+![Settings](inteview_ui/assets/images/setting.png)  
+![Dark Mode](inteview_ui/assets/images/dark_mode.png)
+
+---
+
+## ⚡️ Tech Stack
+- **Frontend (UI)** → Flutter (Bloc, Responsive UI)
+- **Backend** → FastAPI + LangGraph + SQLAlchemy
+- **AI** → Gemini (via LangChain)
+- **Database** → PostgreSQL
+
+---
+
+## 🛠️ Setup
+
+### Clone the repo
+```bash
+git clone https://github.com/Shramikachavda/interview_app.git
+cd interview_app
+
+
+
 ## 🚀 Features
 
 ### Backend
@@ -18,6 +79,7 @@ A production-ready HR interview system built with Python (FastAPI + LangGraph + 
 - **API Integration**: Real HTTP client for backend communication
 - **BLoC Pattern**: Clean state management with proper error handling
 - **Responsive UI**: Modern, user-friendly interface
+- 
 
 
 ## 🚀 Getting Started
