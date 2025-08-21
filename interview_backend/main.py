@@ -11,7 +11,7 @@ app = FastAPI(
     version="1.0.0"
 )
 
-# CORS (optional)
+
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"], 
@@ -20,7 +20,7 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# Include the interview router
+
 app.include_router(start_interview_api.router, prefix="/api/interview", tags=["Interview"])
 app.include_router(auth.router, prefix="/api/auth", tags=["Auth"])
 
