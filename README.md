@@ -50,7 +50,7 @@ An AI-powered interview preparation app with Flutter (UI) and FastAPI (Backend).
 - **Frontend (UI)** → Flutter (Bloc, Responsive UI)
 - **Backend** → FastAPI + LangGraph + SQLAlchemy
 - **AI** → Gemini (via LangChain)
-- **Database** → PostgreSQL
+- **Database** → SQLite
 
 ---
 
