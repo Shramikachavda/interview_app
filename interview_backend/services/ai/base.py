@@ -1,7 +1,8 @@
 from langchain_google_genai import ChatGoogleGenerativeAI
 from core.config import settings
-from fastapi.responses import JSONResponse
 from utils.response import standardize_response  
+
+
 class LLMBase:
     def __init__(self):
         try:
@@ -22,9 +23,8 @@ class LLMBase:
     def is_ready(self) -> bool:
         return self.llm is not None
 
-    def ask(self, prompt):
+    async def ask(self, prompt):
         if not self.llm:
-            # Graceful response when LLM not initialized
             return standardize_response(
                 success=False,
                 message="AI service is currently unavailable. Please try again later.",
@@ -32,11 +32,10 @@ class LLMBase:
             )
 
         try:
-            
             print("[⏳ Waiting for LLM response...]")
-            response = self.llm.invoke([prompt])
+            response = await self.llm.ainvoke([prompt])
             print(response)
-            print("[✅ LLM response received]")
+            print("[LLM response received]")
 
             return standardize_response(
                 success=True,
@@ -44,10 +43,7 @@ class LLMBase:
                 data=response
             )
         except Exception as e:
-            # Log real error internally if needed
-            print(f"💥 LLM Error: {e}")
-
-            # User-friendly response
+            print(f"LLM Error: {e}")
             return standardize_response(
                 success=False,
                 message="Something went wrong while processing your request. Please try again later.",
