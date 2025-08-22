@@ -1,23 +1,14 @@
 import asyncio
 from langchain_core.runnables import RunnableLambda
 from sqlalchemy.orm import Session
-from typing import Optional, List, Dict
-from pydantic import BaseModel
 from langgraph.graph import StateGraph, END
-from models.models import QuestionBank, QuestionType, SessionType, DifficultyLevel
 from services import ai_factory
 from core.config import settings
 import random
 from sqlalchemy.sql import func
-from typing_extensions import Literal
-from sqlalchemy import cast, String
-
-# Import modular nodes
 from nodes.session_nodes import initialize_session, check_if_done
 from nodes.question_nodes import ask_question, store_answer
 from nodes.feedback_nodes import  generate_feedback_node
-
-# Import the new InterviewModel
 from models.interview import InterviewModel
 
 

@@ -4,8 +4,8 @@ from models.interview_feedback import InterviewFeedback
 from models.interview import InterviewModel
 from typing import List, Dict
 from langchain_core.messages import SystemMessage, HumanMessage
-from langchain_core.output_parsers import PydanticOutputParser
 from models.pdf_feedback import InterviewPDFFeedback
+from langchain_core.output_parsers.pydantic import PydanticOutputParser
 
 
 # Prepare the parser for structured output into InterviewFeedback pydantic model
@@ -57,7 +57,7 @@ async def generate_unified_pdf_feedback(experience: str, qa_list: List[Dict[str,
             print("🔄 Invoking LLM asynchronously...")
             feedback = await chain.ainvoke([system_msg, human_msg])
         else:
-            print("⚠️ LLM async method 'ainvoke' not found, falling back to sync invoke (not recommended)")
+            print("⚠️ LLM async method 'ainvoke' not found, falling back to sync invoke")
             feedback = chain.invoke([system_msg, human_msg])
         print("✅ LLM invocation completed")
     except Exception as e:
@@ -140,7 +140,7 @@ async def generate_feedback_node(state: InterviewModel, config: dict = None) -> 
     try:
         feedback = await generate_unified_feedback(state.level, state.q_a_pair, llm)
         print(f"✅ Feedback generated successfully:")
-        print(feedback)  # you can customize how much to print based on your feedback model
+        print(feedback)  
 
         # Attach feedback to state
         if hasattr(feedback, "model_dump"):

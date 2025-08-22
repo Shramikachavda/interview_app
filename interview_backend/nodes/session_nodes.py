@@ -15,11 +15,8 @@ async def initialize_session(state, config: dict = None):
         print(f"🔍 Input state - level: {state.level}")
         print(f"🔍 Input state - q_a_pair length: {len(state.q_a_pair)}")
         
-        # Set total questions based on session type
-        if state.session_type == SessionType.hr:
-            total_questions = random.randint(settings.MIN_QUESTIONS_PER_SESSION, settings.MAX_QUESTIONS_PER_SESSION)
-        else:  # tech
-            total_questions = random.randint(settings.MIN_QUESTIONS_PER_SESSION, settings.MAX_QUESTIONS_PER_SESSION)
+    
+        total_questions = random.randint(settings.MIN_QUESTIONS_PER_SESSION, settings.MAX_QUESTIONS_PER_SESSION)
         
         print(f"🟢 Setting total_questions: {total_questions}")
         
