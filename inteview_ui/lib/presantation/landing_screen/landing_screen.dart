@@ -4,7 +4,6 @@ import '../../theme/theme.dart';
 import 'login/login_bloc/auth_bloc.dart';
 import 'login/login_bloc/auth_event.dart';
 
-
 class LandingScreen extends StatefulWidget {
   const LandingScreen({super.key});
 
@@ -42,11 +41,6 @@ class _LandingScreenState extends State<LandingScreen> with TickerProviderStateM
     ));
 
     _animationController.forward();
-
-
-  /*  WidgetsBinding.instance.addPostFrameCallback((_) {
-      context.read<AuthBloc>().add(CheckAuthStatus());
-    });*/
   }
 
   @override
@@ -57,7 +51,8 @@ class _LandingScreenState extends State<LandingScreen> with TickerProviderStateM
 
   @override
   Widget build(BuildContext context) {
-    final isDesktop = MediaQuery.of(context).size.height > 600;
+    final size = MediaQuery.of(context).size;
+    final isLargeScreen = size.width > 600; // Changed to width for better responsiveness
     return Scaffold(
       body: Container(
         alignment: Alignment.center,
@@ -79,7 +74,7 @@ class _LandingScreenState extends State<LandingScreen> with TickerProviderStateM
             child: Padding(
               padding: EdgeInsets.symmetric(
                 vertical: 24,
-                horizontal: isDesktop ? 120 : 24,
+                horizontal: isLargeScreen ? 120 : 24,
               ),
               child: Center(
                 child: ConstrainedBox(
@@ -120,7 +115,7 @@ class _LandingScreenState extends State<LandingScreen> with TickerProviderStateM
                           description: 'Get detailed feedback and scoring on your responses',
                         ),
                         const SizedBox(height: 32),
-                        _buildActionButtons(context, isDesktop),
+                        _buildActionButtons(context, isLargeScreen),
                       ],
                     ),
                   ),
@@ -133,8 +128,7 @@ class _LandingScreenState extends State<LandingScreen> with TickerProviderStateM
     );
   }
 
-
-  Widget _buildActionButtons(BuildContext context, bool isDesktop) {
+  Widget _buildActionButtons(BuildContext context, bool isLargeScreen) {
     final getStartedButton = ElevatedButton(
       onPressed: () {
         Navigator.pushNamed(context, '/login');
@@ -169,30 +163,27 @@ class _LandingScreenState extends State<LandingScreen> with TickerProviderStateM
       ),
     );
 
-    if (isDesktop) {
-      return SizedBox(
-        width: 700,
-        child: Row(
-          spacing: 24,
-          children: [
-            Expanded(child: getStartedButton),
-
-            Expanded(child: learnMoreButton),
-          ],
-        ),
+    if (isLargeScreen) {
+      return Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Expanded(child: getStartedButton),
+          const SizedBox(width: 24),
+          Expanded(child: learnMoreButton),
+        ],
       );
     } else {
       return Column(
-        spacing: 16,
         mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.stretch, // Makes buttons full width on small screens
         children: [
-          SizedBox(width: double.infinity, child: getStartedButton),
-          SizedBox(width: double.infinity, child: learnMoreButton),
+          getStartedButton,
+          const SizedBox(height: 16),
+          learnMoreButton,
         ],
       );
     }
   }
-
 
   Widget _buildFeatureCard({
     required IconData icon,
@@ -202,19 +193,19 @@ class _LandingScreenState extends State<LandingScreen> with TickerProviderStateM
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: Colors.white.withValues( alpha: 0.1),
+        color: Colors.white.withOpacity(0.1),
         borderRadius: BorderRadius.circular(12),
         border: Border.all(
-          color: Colors.white.withValues( alpha: 0.2),
+          color: Colors.white.withOpacity(0.2),
           width: 1,
         ),
       ),
-      child: Row(spacing: 12,
+      child: Row(
         children: [
           Container(
             padding: const EdgeInsets.all(8),
             decoration: BoxDecoration(
-              color: Colors.white.withValues( alpha: 0.2),
+              color: Colors.white.withOpacity(0.2),
               borderRadius: BorderRadius.circular(8),
             ),
             child: Icon(
@@ -223,10 +214,9 @@ class _LandingScreenState extends State<LandingScreen> with TickerProviderStateM
               size: 20,
             ),
           ),
-
+          const SizedBox(width: 12),
           Expanded(
             child: Column(
-              spacing: 2,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
@@ -237,7 +227,7 @@ class _LandingScreenState extends State<LandingScreen> with TickerProviderStateM
                     fontWeight: FontWeight.w500,
                   ),
                 ),
-
+                const SizedBox(height: 2),
                 Text(
                   description,
                   style: const TextStyle(
@@ -253,24 +243,27 @@ class _LandingScreenState extends State<LandingScreen> with TickerProviderStateM
     );
   }
 
-
   /// show dialog
   void _showDemoDialog() {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
         title: const Text('Interview Coach Features'),
-        content: const Column(
-          spacing: 8,
+        content: Column(
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text('🎯 Realistic Interview Simulation'),
-            Text('🤖 AI-Powered Question Generation'),
-            Text('💻 Built-in Code Editor'),
-            Text('📊 Detailed Performance Analytics'),
-            Text('🎨 Beautiful, Modern UI'),
-            Text('📱 Responsive Web Design'),
+            const Text('🎯 Realistic Interview Simulation'),
+            const SizedBox(height: 8),
+            const Text('🤖 AI-Powered Question Generation'),
+            const SizedBox(height: 8),
+            const Text('💻 Built-in Code Editor'),
+            const SizedBox(height: 8),
+            const Text('📊 Detailed Performance Analytics'),
+            const SizedBox(height: 8),
+            const Text('🎨 Beautiful, Modern UI'),
+            const SizedBox(height: 8),
+            const Text('📱 Responsive Web Design'),
           ],
         ),
         actions: [

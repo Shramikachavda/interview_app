@@ -35,7 +35,6 @@ class _LoginScreenState extends State<LoginScreen>
   late Animation<Offset> _slideAnimation;
   late Animation<double> _scaleAnimation;
 
-
   @override
   void initState() {
     super.initState();
@@ -73,7 +72,6 @@ class _LoginScreenState extends State<LoginScreen>
       ),
     );
 
-
     _animationController.forward();
   }
 
@@ -96,10 +94,34 @@ class _LoginScreenState extends State<LoginScreen>
     super.dispose();
   }
 
+  // Helper method to get responsive values
+  double _getResponsiveValue(BuildContext context, {
+    required double mobile,
+    required double tablet,
+    required double desktop,
+  }) {
+    final screenWidth = MediaQuery.of(context).size.width;
+    if (screenWidth < 600) return mobile;
+    if (screenWidth < 1024) return tablet;
+    return desktop;
+  }
+
+  // Helper method to check if screen is small
+  bool _isSmallScreen(BuildContext context) {
+    return MediaQuery.of(context).size.width < 600;
+  }
+
+  // Helper method to check if screen height is small
+  bool _isShortScreen(BuildContext context) {
+    return MediaQuery.of(context).size.height < 700;
+  }
 
   @override
   Widget build(BuildContext context) {
-    final isDesktop =MediaQuery.of(context).size.height > 600;
+    final screenSize = MediaQuery.of(context).size;
+    final isSmallScreen = _isSmallScreen(context);
+    final isShortScreen = _isShortScreen(context);
+
     return BlocListener<AuthBloc, AuthState>(
       listener: (context, state) {
         if (!mounted) return;
@@ -122,7 +144,10 @@ class _LoginScreenState extends State<LoginScreen>
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(12),
               ),
-              margin: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
+              margin: EdgeInsets.symmetric(
+                horizontal: isSmallScreen ? 16 : 24,
+                vertical: 16,
+              ),
             ),
           );
         }
@@ -132,35 +157,42 @@ class _LoginScreenState extends State<LoginScreen>
         extendBodyBehindAppBar: true,
         body: Stack(
           children: [
-
             _buildAnimatedBackground(),
 
-
-
-
-            // Main content
+            // Main content with responsive layout
             SafeArea(
-              child: Center(
-                child: SingleChildScrollView(
-                  keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
-                  padding: EdgeInsets.symmetric(
-                    horizontal: isDesktop ? 120 : 24,
-                    vertical: 32,
-                  ),
-                  child: FadeTransition(
-                    opacity: _fadeAnimation,
-                    child: SlideTransition(
-                      position: _slideAnimation,
-                      child: ScaleTransition(
-                        scale: _scaleAnimation,
-                        child: ConstrainedBox(
-                          constraints: const BoxConstraints(maxWidth: 700),
-                          child: _buildGlassCard(),
+              child: LayoutBuilder(
+                builder: (context, constraints) {
+                  return Center(
+                    child: SingleChildScrollView(
+                      keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
+                      padding: EdgeInsets.symmetric(
+                        horizontal: _getResponsiveValue(context,
+                          mobile: 16,
+                          tablet: 32,
+                          desktop: 120,
+                        ),
+                        vertical: isShortScreen ? 16 : 32,
+                      ),
+                      child: FadeTransition(
+                        opacity: _fadeAnimation,
+                        child: SlideTransition(
+                          position: _slideAnimation,
+                          child: ScaleTransition(
+                            scale: _scaleAnimation,
+                            child: ConstrainedBox(
+                              constraints: BoxConstraints(
+                                maxWidth: isSmallScreen ? double.infinity : 700,
+                                minHeight: isShortScreen ? 0 : constraints.maxHeight * 0.6,
+                              ),
+                              child: _buildGlassCard(),
+                            ),
+                          ),
                         ),
                       ),
                     ),
-                  ),
-                ),
+                  );
+                },
               ),
             ),
           ],
@@ -184,16 +216,16 @@ class _LoginScreenState extends State<LoginScreen>
           stops: const [0.0, 0.3, 0.7, 1.0],
         ),
       ),
-
     );
   }
 
-
-
   Widget _buildGlassCard() {
+    final isSmallScreen = _isSmallScreen(context);
+    final isShortScreen = _isShortScreen(context);
+
     return Container(
       decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(32),
+        borderRadius: BorderRadius.circular(isSmallScreen ? 20 : 32),
         boxShadow: [
           BoxShadow(
             color: Colors.black.withOpacity(0.1),
@@ -210,13 +242,13 @@ class _LoginScreenState extends State<LoginScreen>
         ],
       ),
       child: ClipRRect(
-        borderRadius: BorderRadius.circular(32),
+        borderRadius: BorderRadius.circular(isSmallScreen ? 20 : 32),
         child: BackdropFilter(
           filter: ImageFilter.blur(sigmaX: 20, sigmaY: 20),
           child: Container(
-            padding: const EdgeInsets.all(32),
+            padding: EdgeInsets.all(isSmallScreen ? 20 : 32),
             decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(32),
+              borderRadius: BorderRadius.circular(isSmallScreen ? 20 : 32),
               gradient: LinearGradient(
                 begin: Alignment.topLeft,
                 end: Alignment.bottomRight,
@@ -237,7 +269,7 @@ class _LoginScreenState extends State<LoginScreen>
                 valueListenable: _isLogin,
                 builder: (context, isLogin, _) {
                   return Column(
-                    spacing: 12,
+                    spacing: isSmallScreen ? 8 : 12,
                     mainAxisSize: MainAxisSize.min,
                     crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: [
@@ -267,11 +299,12 @@ class _LoginScreenState extends State<LoginScreen>
 
                       _buildPasswordField(),
                       if (isLogin) _buildForgotPassword(),
-                      _buildSubmitButton(isLogin),
-                      SizedBox(height: 6,) ,
-                      _buildToggleLoginRegister(),
 
-                      _buildFooter(),
+                      SizedBox(height: isSmallScreen ? 8 : 12),
+                      _buildSubmitButton(isLogin),
+                      SizedBox(height: isSmallScreen ? 4 : 6),
+                      _buildToggleLoginRegister(),
+                      if (!isShortScreen) _buildFooter(),
                     ],
                   );
                 },
@@ -284,12 +317,15 @@ class _LoginScreenState extends State<LoginScreen>
   }
 
   Widget _buildHeader(bool isLogin) {
+    final isSmallScreen = _isSmallScreen(context);
+    final isShortScreen = _isShortScreen(context);
+
     return Column(
       children: [
-        // Hero logo with glass effect
+        // Hero logo with responsive size
         Container(
-          width: 100,
-          height: 100,
+          width: isSmallScreen ? 70 : 100,
+          height: isSmallScreen ? 70 : 100,
           decoration: BoxDecoration(
             shape: BoxShape.circle,
             gradient: LinearGradient(
@@ -313,7 +349,7 @@ class _LoginScreenState extends State<LoginScreen>
             ],
           ),
           child: ClipRRect(
-            borderRadius: BorderRadius.circular(50),
+            borderRadius: BorderRadius.circular(isSmallScreen ? 35 : 50),
             child: BackdropFilter(
               filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
               child: Container(
@@ -328,18 +364,18 @@ class _LoginScreenState extends State<LoginScreen>
                 ),
                 child: Icon(
                   isLogin ? Icons.login_rounded : Icons.person_add_rounded,
-                  size: 45,
+                  size: isSmallScreen ? 30 : 45,
                   color: Colors.white,
                 ),
               ),
             ),
           ),
         ),
-        const SizedBox(height: 24),
+        SizedBox(height:  10),
         Text(
           isLogin ? 'Welcome Back!' : 'Join the Journey',
           style: TextStyle(
-            fontSize: 28,
+            fontSize: isSmallScreen ? 24 : 28,
             fontWeight: FontWeight.w800,
             color: Colors.white,
             letterSpacing: 0.5,
@@ -352,22 +388,26 @@ class _LoginScreenState extends State<LoginScreen>
             ],
           ),
         ),
-        const SizedBox(height: 8),
-        Text(
-          isLogin
-              ? 'Sign in to ace your interview prep'
-              : 'Create an account to start your interview adventure',
-          style: TextStyle(
-            fontSize: 16,
-            color: Colors.white.withOpacity(0.9),
-            height: 1.4,
-            fontWeight: FontWeight.w400,
+        SizedBox(height: isShortScreen ? 4 : 8),
+
+       Text(
+            isLogin
+                ? 'Sign in to ace your interview prep'
+                : 'Create an account to start your interview adventure',
+            style: TextStyle(
+              fontSize: isSmallScreen ? 14 : 16,
+              color: Colors.white.withOpacity(0.9),
+              height: 1.4,
+              fontWeight: FontWeight.w400,
+            ),
+            textAlign: TextAlign.center,
           ),
-          textAlign: TextAlign.center,
-        ),
+
+        SizedBox(height: isShortScreen ? 12 : 16),
       ],
     );
   }
+
   Widget _buildGlassFormField({
     required TextEditingController controller,
     required FocusNode focusNode,
@@ -380,8 +420,10 @@ class _LoginScreenState extends State<LoginScreen>
     Widget? suffixIcon,
     TextInputType keyboardType = TextInputType.text,
   }) {
+    final isSmallScreen = _isSmallScreen(context);
+
     return Container(
-      margin: const EdgeInsets.symmetric(vertical: 8),
+      margin: EdgeInsets.symmetric(vertical: isSmallScreen ? 4 : 8),
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(12),
         gradient: LinearGradient(
@@ -416,29 +458,29 @@ class _LoginScreenState extends State<LoginScreen>
             textInputAction: textInputAction,
             onFieldSubmitted: onFieldSubmitted,
             keyboardType: keyboardType,
-            style: const TextStyle(
-              fontSize: 14, // smaller text
+            style: TextStyle(
+              fontSize: isSmallScreen ? 13 : 14,
               color: Colors.white,
               fontWeight: FontWeight.w400,
             ),
             decoration: InputDecoration(
               labelText: label,
               labelStyle: TextStyle(
-                fontSize: 13,
+                fontSize: isSmallScreen ? 12 : 13,
                 color: Theme.of(context).colorScheme.surfaceContainer.withValues(alpha: 0.8),
                 fontWeight: FontWeight.w400,
               ),
               prefixIcon: Icon(
                 icon,
                 color: Theme.of(context).colorScheme.surfaceContainer.withValues(alpha: 0.8),
-                size: 18, // smaller icon
+                size: isSmallScreen ? 16 : 18,
               ),
               suffixIcon: suffixIcon,
               filled: true,
               fillColor: Colors.transparent,
-              contentPadding: const EdgeInsets.symmetric(
-                horizontal: 14,
-                vertical: 12, // reduced padding
+              contentPadding: EdgeInsets.symmetric(
+                horizontal: isSmallScreen ? 12 : 14,
+                vertical: isSmallScreen ? 10 : 12,
               ),
               border: InputBorder.none,
               enabledBorder: InputBorder.none,
@@ -448,7 +490,7 @@ class _LoginScreenState extends State<LoginScreen>
               errorStyle: TextStyle(
                 color: Colors.red.shade200,
                 fontWeight: FontWeight.w500,
-                fontSize: 12,
+                fontSize: isSmallScreen ? 11 : 12,
               ),
             ),
           ),
@@ -458,6 +500,8 @@ class _LoginScreenState extends State<LoginScreen>
   }
 
   Widget _buildPasswordField() {
+    final isSmallScreen = _isSmallScreen(context);
+
     return ValueListenableBuilder<bool>(
       valueListenable: _isPasswordVisible,
       builder: (context, isVisible, _) {
@@ -472,8 +516,8 @@ class _LoginScreenState extends State<LoginScreen>
           suffixIcon: IconButton(
             icon: Icon(
               isVisible ? Icons.visibility_rounded : Icons.visibility_off_rounded,
-              color: Theme.of(context).colorScheme.surfaceContainer.withValues(alpha: 0.8) ,
-              size: 22,
+              color: Theme.of(context).colorScheme.surfaceContainer.withValues(alpha: 0.8),
+              size: isSmallScreen ? 20 : 22,
             ),
             onPressed: () => _isPasswordVisible.value = !isVisible,
             splashRadius: 20,
@@ -484,11 +528,13 @@ class _LoginScreenState extends State<LoginScreen>
   }
 
   Widget _buildGlassDropdown() {
+    final isSmallScreen = _isSmallScreen(context);
+
     return ValueListenableBuilder<String>(
       valueListenable: _selectedExperienceLevel,
       builder: (context, value, _) {
         return Container(
-          margin: const EdgeInsets.symmetric(vertical: 8),
+          margin: EdgeInsets.symmetric(vertical: isSmallScreen ? 4 : 8),
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(12),
             gradient: LinearGradient(
@@ -521,20 +567,20 @@ class _LoginScreenState extends State<LoginScreen>
                 decoration: InputDecoration(
                   labelText: 'Experience Level',
                   labelStyle: TextStyle(
-                    fontSize: 13,
+                    fontSize: isSmallScreen ? 12 : 13,
                     color: Colors.white.withOpacity(0.8),
                     fontWeight: FontWeight.w400,
                   ),
                   prefixIcon: Icon(
                     Icons.work_outline_rounded,
                     color: Colors.white.withOpacity(0.8),
-                    size: 18, // smaller icon
+                    size: isSmallScreen ? 16 : 18,
                   ),
                   filled: true,
                   fillColor: Colors.transparent,
-                  contentPadding: const EdgeInsets.symmetric(
-                    horizontal: 14,
-                    vertical: 12, // reduced height
+                  contentPadding: EdgeInsets.symmetric(
+                    horizontal: isSmallScreen ? 12 : 14,
+                    vertical: isSmallScreen ? 10 : 12,
                   ),
                   border: InputBorder.none,
                 ),
@@ -544,7 +590,7 @@ class _LoginScreenState extends State<LoginScreen>
                     child: Text(
                       'Entry Level',
                       style: TextStyle(
-                        fontSize: 14,
+                        fontSize: isSmallScreen ? 13 : 14,
                         color: Colors.grey.shade800,
                       ),
                     ),
@@ -554,7 +600,7 @@ class _LoginScreenState extends State<LoginScreen>
                     child: Text(
                       'Mid Level',
                       style: TextStyle(
-                        fontSize: 14,
+                        fontSize: isSmallScreen ? 13 : 14,
                         color: Colors.grey.shade800,
                       ),
                     ),
@@ -564,7 +610,7 @@ class _LoginScreenState extends State<LoginScreen>
                     child: Text(
                       'Senior Level',
                       style: TextStyle(
-                        fontSize: 14,
+                        fontSize: isSmallScreen ? 13 : 14,
                         color: Colors.grey.shade800,
                       ),
                     ),
@@ -573,15 +619,15 @@ class _LoginScreenState extends State<LoginScreen>
                 onChanged: (val) =>
                 val != null ? _selectedExperienceLevel.value = val : null,
                 dropdownColor: Colors.white.withOpacity(0.95),
-                style: const TextStyle(
-                  fontSize: 14,
+                style: TextStyle(
+                  fontSize: isSmallScreen ? 13 : 14,
                   color: Colors.white,
                   fontWeight: FontWeight.w400,
                 ),
                 icon: Icon(
                   Icons.arrow_drop_down_rounded,
                   color: Colors.white.withOpacity(0.8),
-                  size: 22, // smaller arrow
+                  size: isSmallScreen ? 20 : 22,
                 ),
               ),
             ),
@@ -591,17 +637,18 @@ class _LoginScreenState extends State<LoginScreen>
     );
   }
 
-
   Widget _buildSubmitButton(bool isLogin) {
+    final isSmallScreen = _isSmallScreen(context);
+
     return BlocBuilder<AuthBloc, AuthState>(
       builder: (context, state) {
         return AnimatedScale(
           scale: state is AuthLoading ? 0.95 : 1.0,
           duration: const Duration(milliseconds: 200),
           child: Container(
-            height: 48, // 🔹 smaller height (default Material button height)
+            height: isSmallScreen ? 44 : 48,
             decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(12), // 🔹 smaller radius
+              borderRadius: BorderRadius.circular(12),
               gradient: LinearGradient(
                 begin: Alignment.topLeft,
                 end: Alignment.bottomRight,
@@ -625,14 +672,16 @@ class _LoginScreenState extends State<LoginScreen>
             child: ClipRRect(
               borderRadius: BorderRadius.circular(12),
               child: BackdropFilter(
-                filter: ImageFilter.blur(sigmaX: 8, sigmaY: 8), // 🔹 softer blur
+                filter: ImageFilter.blur(sigmaX: 8, sigmaY: 8),
                 child: ElevatedButton(
                   onPressed: state is AuthLoading ? null : _handleSubmit,
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Colors.transparent,
                     shadowColor: Colors.transparent,
                     foregroundColor: Colors.white,
-                    padding: const EdgeInsets.symmetric(horizontal: 20),
+                    padding: EdgeInsets.symmetric(
+                      horizontal: isSmallScreen ? 16 : 20,
+                    ),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(12),
                     ),
@@ -642,18 +691,18 @@ class _LoginScreenState extends State<LoginScreen>
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       SizedBox(
-                        width: 18,
-                        height: 18,
+                        width: isSmallScreen ? 16 : 18,
+                        height: isSmallScreen ? 16 : 18,
                         child: CircularProgressIndicator(
                           strokeWidth: 2,
                           valueColor: AlwaysStoppedAnimation(Colors.white),
                         ),
                       ),
                       const SizedBox(width: 10),
-                      const Text(
+                      Text(
                         'Processing...',
                         style: TextStyle(
-                          fontSize: 14, // 🔹 smaller text
+                          fontSize: isSmallScreen ? 13 : 14,
                           fontWeight: FontWeight.w600,
                         ),
                       ),
@@ -666,13 +715,13 @@ class _LoginScreenState extends State<LoginScreen>
                         isLogin
                             ? Icons.login_rounded
                             : Icons.person_add_rounded,
-                        size: 18, // 🔹 smaller icon
+                        size: isSmallScreen ? 16 : 18,
                       ),
                       const SizedBox(width: 8),
                       Text(
                         isLogin ? 'Sign In' : 'Create Account',
-                        style: const TextStyle(
-                          fontSize: 14, // 🔹 smaller text
+                        style: TextStyle(
+                          fontSize: isSmallScreen ? 13 : 14,
                           fontWeight: FontWeight.w500,
                         ),
                       ),
@@ -687,8 +736,9 @@ class _LoginScreenState extends State<LoginScreen>
     );
   }
 
-
   Widget _buildForgotPassword() {
+    final isSmallScreen = _isSmallScreen(context);
+
     return Align(
       alignment: Alignment.centerRight,
       child: TextButton(
@@ -700,10 +750,11 @@ class _LoginScreenState extends State<LoginScreen>
             ),
           );
         },
+
         child: Text(
           'Forgot Password?',
           style: TextStyle(
-            fontSize: 14,
+            fontSize: isSmallScreen ? 13 : 14,
             color: Colors.white.withOpacity(0.9),
             fontWeight: FontWeight.w600,
             decoration: TextDecoration.underline,
@@ -715,60 +766,71 @@ class _LoginScreenState extends State<LoginScreen>
   }
 
   Widget _buildToggleLoginRegister() {
+    final isSmallScreen = _isSmallScreen(context);
+
     return ValueListenableBuilder<bool>(
       valueListenable: _isLogin,
       builder: (context, isLogin, _) {
-        return Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Text(
-              isLogin ? "Don't have an account? " : "Already have an account? ",
-              style: TextStyle(
-                fontSize: 14,
-                color: Colors.white.withOpacity(0.8),
-                fontWeight: FontWeight.w400,
-              ),
-            ),
-            GestureDetector(
-              onTap: () {
-                _isLogin.value = !isLogin;
-                _formKey.currentState?.reset();
-                _usernameController.clear();
-                _emailController.clear();
-                _passwordController.clear();
-                FocusScope.of(context).unfocus();
-                _animationController.forward(from: 0.0);
-              },
-              child: Text(
-                isLogin ? 'Sign Up' : 'Sign In',
+        return Padding(
+          padding: EdgeInsets.symmetric(
+            horizontal: isSmallScreen ? 8 : 0,
+          ),
+          child: Row(
+            spacing: 6,
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Text(
+                isLogin ? "Don't have an account?" : "Already have an account?",
                 style: TextStyle(
-                  fontSize: 16,
-                  color: Colors.white,
-                  fontWeight: FontWeight.w700,
-                  decoration: TextDecoration.underline,
-                  decorationColor: Colors.white.withOpacity(0.7),
-                  decorationThickness: 2,
-                  shadows: [
-                    Shadow(
-                      color: Colors.black.withOpacity(0.3),
-                      offset: const Offset(0, 1),
-                      blurRadius: 2,
-                    ),
-                  ],
+                  fontSize: isSmallScreen ? 13 : 14,
+                  color: Colors.white.withOpacity(0.8),
+                  fontWeight: FontWeight.w400,
+                ),
+                textAlign: TextAlign.center,
+              ),
+
+              InkWell(
+                onTap: () {
+                  _isLogin.value = !isLogin;
+                  _formKey.currentState?.reset();
+                  _usernameController.clear();
+                  _emailController.clear();
+                  _passwordController.clear();
+                  FocusScope.of(context).unfocus();
+                  _animationController.forward(from: 0.0);
+                },
+                child: Text(
+                  isLogin ? 'Sign Up' : 'Sign In',
+                  style: TextStyle(
+                    fontSize: isSmallScreen ? 15 : 16,
+                    color: Colors.white,
+                    fontWeight: FontWeight.w700,
+                    decoration: TextDecoration.underline,
+                    decorationColor: Colors.white.withOpacity(0.7),
+                    decorationThickness: 2,
+                    shadows: [
+                      Shadow(
+                        color: Colors.black.withOpacity(0.3),
+                        offset: const Offset(0, 1),
+                        blurRadius: 2,
+                      ),
+                    ],
+                  ),
                 ),
               ),
-            ),
-          ],
+            ],
+          ),
         );
       },
     );
   }
 
   Widget _buildFooter() {
+
     return Text(
       'By continuing, you agree to our Terms & Privacy Policy',
       style: TextStyle(
-        fontSize: 12,
+        fontSize: 11 ,
         color: Colors.white.withOpacity(0.7),
         fontWeight: FontWeight.w400,
       ),

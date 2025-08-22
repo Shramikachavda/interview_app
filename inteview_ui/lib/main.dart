@@ -88,11 +88,11 @@ class InterviewCoachApp extends StatelessWidget {
                     );
                   }
 
-                  if (!snapshot.hasData) {
+                 /* if (!snapshot.hasData) {
                     return const Scaffold(
                       body: Center(child: Text("No saved feedback found")),
                     );
-                  }
+                  }*/
 
                   final data = snapshot.data!;
                   return FeedbackScreen(
